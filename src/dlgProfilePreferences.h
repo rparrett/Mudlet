@@ -222,6 +222,8 @@ private:
     void cancelShortcutCaptures();
     void switchEditorTheme(const QString& themeName);
     static QString findThemeCounterpart(const QString& themeName, const QComboBox* themeComboBox, bool toDark);
+    void initLoginSequenceControls(Host* pHost);
+    void saveLoginSequenceSettings();
 
 
     QPointer<Host> mpHost;

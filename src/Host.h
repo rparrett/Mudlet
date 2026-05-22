@@ -194,6 +194,16 @@ public:
     QString& getPass() { return mPass; }
     void setPass(const QString& password) { mPass = password; }
     bool hasAutoLoginCredentials() const { return !mLogin.isEmpty() && !mPass.isEmpty(); }
+
+    // Login sequence configuration
+    int getLoginStep1Delay() const { return mLoginStep1Delay; }
+    void setLoginStep1Delay(const int delay) { mLoginStep1Delay = delay; }
+    QString getLoginStep1Command() const { return mLoginStep1Command; }
+    void setLoginStep1Command(const QString& command) { mLoginStep1Command = command; }
+    int getLoginStep2Delay() const { return mLoginStep2Delay; }
+    void setLoginStep2Delay(const int delay) { mLoginStep2Delay = delay; }
+    QString getLoginStep2Command() const { return mLoginStep2Command; }
+    void setLoginStep2Command(const QString& command) { mLoginStep2Command = command; }
     int getRetries() { return mRetries; }
     void setRetries(const int retries) { mRetries = retries; }
     int getTimeout() { return mTimeout; }
@@ -923,6 +933,12 @@ private:
     QString mLine;
     QString mLogin;
     QString mPass;
+
+    // Login sequence configuration
+    int mLoginStep1Delay = 2000;                                        // Default: 2000ms (2 seconds) for username
+    QString mLoginStep1Command = QStringLiteral("{username}");          // Default: send username
+    int mLoginStep2Delay = 1000;                                        // Default: 1000ms (1 second) after step 1
+    QString mLoginStep2Command = QStringLiteral("{password}");          // Default: send password
 
     int mPort;
 

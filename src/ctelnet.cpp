@@ -585,17 +585,30 @@ void cTelnet::terminateConnection()
 
 void cTelnet::slot_send_login()
 {
-    if (!mpHost->getLogin().isEmpty()) {
-        sendData(mpHost->getLogin());
+    // Send the first login sequence step with string substitution
+    QString command = mpHost->getLoginStep1Command();
+    if (!command.isEmpty()) {
+        // Apply string substitution
+        command = substituteLoginVariables(command);
+        sendData(command);
+    }
+
+    // Start the second timer for the next step
+    const int step2DelayMs = mpHost->getLoginStep2Delay(); // Already in milliseconds
+    if (step2DelayMs >= 0) {
+        mTimerPass->start(step2DelayMs);
     }
 }
 
 void cTelnet::slot_send_pass()
 {
-    // Auto-login: Send password if credentials are configured
-    if (mpHost->hasAutoLoginCredentials()) {
-        qDebug() << "Auto-login: Sending password (timer-based, independent of ECHO mode)";
-        sendData(mpHost->getPass(), false);
+    // Send the second login sequence step with string substitution
+    QString command = mpHost->getLoginStep2Command();
+    if (!command.isEmpty()) {
+        // Apply string substitution
+        command = substituteLoginVariables(command);
+        qDebug() << "Auto-login: Sending second step command (timer-based, independent of ECHO mode)";
+        sendData(command, false);
     }
 }
 
@@ -676,8 +689,10 @@ void cTelnet::slot_socketConnected()
 #endif
     mpHost->mLuaInterpreter.call(qsl("onConnect"), QString());
     mConnectionTimer.start();
-    mTimerLogin->start(2s);
-    mTimerPass->start(3s);
+
+    // Start the first login sequence step with configurable delay (already in milliseconds)
+    const int step1DelayMs = mpHost->getLoginStep1Delay();
+    mTimerLogin->start(step1DelayMs);
 
     emit signal_connected(mpHost);
 
@@ -5448,4 +5463,15 @@ bool cTelnet::checkEchoAnomalyPattern()
     }
     mEchoToggleTimer.restart();
     return false;
+}
+
+QString cTelnet::substituteLoginVariables(const QString& command)
+{
+    QString result = command;
+
+    // Apply string substitution for {username} and {password}
+    result.replace(QStringLiteral("{username}"), mpHost->getLogin());
+    result.replace(QStringLiteral("{password}"), mpHost->getPass());
+
+    return result;
 }

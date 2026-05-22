@@ -1509,6 +1509,9 @@ void dlgProfilePreferences::initWithHost(Host* pHost)
             currentShortcuts[key] = defaultSequence;
         });
     }
+
+    // Initialize login sequence controls
+    initLoginSequenceControls(pHost);
 }
 
 void dlgProfilePreferences::disconnectHostRelatedControls()
@@ -3032,6 +3035,9 @@ void dlgProfilePreferences::slot_saveAndClose()
     mudlet* pMudlet = mudlet::self();
     Host* pHost = mpHost;
     if (pHost) {
+        // Save login sequence settings
+        saveLoginSequenceSettings();
+
         auto console = pHost->mpConsole;
         if (comboBox_dictionary->isEnabled() && comboBox_dictionary->currentIndex() >= 0) {
             pHost->setSpellDic(comboBox_dictionary->currentData().toString());
@@ -4964,6 +4970,95 @@ void dlgProfilePreferences::slot_gridSizeChanged(double size)
             mpHost->mpMap->mpMapper->mp2dMap->update();
         }
     }
+}
+
+void dlgProfilePreferences::initLoginSequenceControls(Host* pHost)
+{
+    const QString profileName = pHost->getName();
+    mudlet* pMudlet = mudlet::self();
+
+    // Load saved values from profile data, or use Host defaults
+    // Step 1 settings
+    QString step1DelayStr = pMudlet->readProfileData(profileName, qsl("loginStep1Delay"));
+    QString step1Command = pMudlet->readProfileData(profileName, qsl("loginStep1Command"));
+    if (!step1DelayStr.isEmpty()) {
+        bool ok = false;
+        int delay = step1DelayStr.toInt(&ok);
+        if (ok && delay >= 0) {
+            pHost->setLoginStep1Delay(delay);
+        }
+    }
+    if (!step1Command.isEmpty()) {
+        pHost->setLoginStep1Command(step1Command);
+    }
+
+    // Step 2 settings
+    QString step2DelayStr = pMudlet->readProfileData(profileName, qsl("loginStep2Delay"));
+    QString step2Command = pMudlet->readProfileData(profileName, qsl("loginStep2Command"));
+    if (!step2DelayStr.isEmpty()) {
+        bool ok = false;
+        int delay = step2DelayStr.toInt(&ok);
+        if (ok && delay >= 0) {
+            pHost->setLoginStep2Delay(delay);
+        }
+    }
+    if (!step2Command.isEmpty()) {
+        pHost->setLoginStep2Command(step2Command);
+    }
+
+    // Set up the input controls with loaded values
+    spinBox_step1Delay->setValue(pHost->getLoginStep1Delay());
+    lineEdit_step1Command->setText(pHost->getLoginStep1Command());
+    spinBox_step2Delay->setValue(pHost->getLoginStep2Delay());
+    lineEdit_step2Command->setText(pHost->getLoginStep2Command());
+
+    // Connect signals to save changes immediately when controls are modified
+    connect(spinBox_step1Delay, qOverload<int>(&QSpinBox::valueChanged), this, [this]() {
+        if (mpHost) {
+            saveLoginSequenceSettings();
+        }
+    });
+    connect(lineEdit_step1Command, &QLineEdit::textChanged, this, [this]() {
+        if (mpHost) {
+            saveLoginSequenceSettings();
+        }
+    });
+    connect(spinBox_step2Delay, qOverload<int>(&QSpinBox::valueChanged), this, [this]() {
+        if (mpHost) {
+            saveLoginSequenceSettings();
+        }
+    });
+    connect(lineEdit_step2Command, &QLineEdit::textChanged, this, [this]() {
+        if (mpHost) {
+            saveLoginSequenceSettings();
+        }
+    });
+}
+
+void dlgProfilePreferences::saveLoginSequenceSettings()
+{
+    // Save the control values back to the Host and profile data
+    if (!mpHost) {
+        return;
+    }
+
+    const QString profileName = mpHost->getName();
+
+    // Get step 1 values
+    const int step1Delay = spinBox_step1Delay->value();
+    const QString step1Command = lineEdit_step1Command->text();
+    mpHost->setLoginStep1Delay(step1Delay);
+    mpHost->setLoginStep1Command(step1Command);
+    mudlet::self()->writeProfileData(profileName, qsl("loginStep1Delay"), QString::number(step1Delay));
+    mudlet::self()->writeProfileData(profileName, qsl("loginStep1Command"), step1Command);
+
+    // Get step 2 values
+    const int step2Delay = spinBox_step2Delay->value();
+    const QString step2Command = lineEdit_step2Command->text();
+    mpHost->setLoginStep2Delay(step2Delay);
+    mpHost->setLoginStep2Command(step2Command);
+    mudlet::self()->writeProfileData(profileName, qsl("loginStep2Delay"), QString::number(step2Delay));
+    mudlet::self()->writeProfileData(profileName, qsl("loginStep2Command"), step2Command);
 }
 
 void dlgProfilePreferences::closeEvent(QCloseEvent* event)

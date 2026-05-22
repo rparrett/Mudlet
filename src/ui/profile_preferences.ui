@@ -4436,6 +4436,115 @@ you can use it but there could be issues with aligning columns of text</string>
         </widget>
        </item>
        <item>
+        <widget class="QGroupBox" name="groupBox_loginSequence">
+         <property name="title">
+          <string>Login sequence</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_loginSequence">
+          <item>
+           <widget class="QLabel" name="label_loginSequenceDescription">
+            <property name="text">
+             <string>Configure the automatic login commands and timing. Use {username} and {password} for substitution. Leave command empty to skip a step.</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="widget_loginSequenceControls" native="true">
+            <layout class="QGridLayout" name="gridLayout_loginSequence">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_step1">
+               <property name="text">
+                <string>Step 1:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="spinBox_step1Delay">
+               <property name="toolTip">
+                <string>Delay before sending step 1 command (milliseconds)</string>
+               </property>
+               <property name="suffix">
+                <string> ms</string>
+               </property>
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>60000</number>
+               </property>
+               <property name="singleStep">
+                <number>100</number>
+               </property>
+               <property name="value">
+                <number>2000</number>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLineEdit" name="lineEdit_step1Command">
+               <property name="toolTip">
+                <string>Command for step 1. Use {username} and {password} for substitution.</string>
+               </property>
+               <property name="placeholderText">
+                <string>{username}</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_step2">
+               <property name="text">
+                <string>Step 2:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QSpinBox" name="spinBox_step2Delay">
+               <property name="toolTip">
+                <string>Delay after step 1 before sending step 2 command (milliseconds)</string>
+               </property>
+               <property name="suffix">
+                <string> ms</string>
+               </property>
+               <property name="minimum">
+                <number>0</number>
+               </property>
+               <property name="maximum">
+                <number>60000</number>
+               </property>
+               <property name="singleStep">
+                <number>100</number>
+               </property>
+               <property name="value">
+                <number>1000</number>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QLineEdit" name="lineEdit_step2Command">
+               <property name="toolTip">
+                <string>Command for step 2. Use {username} and {password} for substitution. Leave empty to skip this step.</string>
+               </property>
+               <property name="placeholderText">
+                <string>{password}</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer_chat">
          <property name="orientation">
           <enum>Qt::Orientation::Vertical</enum>

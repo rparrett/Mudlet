@@ -305,6 +305,7 @@ private:
     int decompressBuffer(char*& in_buffer, int& length, char* out_buffer);
     void reset();
     void sendLoginAndPass();
+    QString substituteLoginVariables(const QString& command);
 
     QByteArray prepareNewEnvironData(const QString&);
     QString getNewEnvironValueUser();
